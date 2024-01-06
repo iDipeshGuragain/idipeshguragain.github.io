@@ -416,64 +416,53 @@
   <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
-<script>
-(function () {
 
 
-  let forms = document.querySelectorAll('.php-email-form');
+    <script>
+    (function () {
+      let forms = document.querySelectorAll('.php-email-form');
 
-  forms.forEach( function(e) {
-    e.addEventListener('submit', function(event) {
-      event.preventDefault();
-      let thisForm = this;
-      const data = new FormData(this);
-      const action = this.getAttribute('action');
+      forms.forEach(function (e) {
+        e.addEventListener('submit', function (event) {
+          event.preventDefault();
+          let thisForm = this;
+          const data = new FormData(thisForm);
+          const action = thisForm.getAttribute('action');
 
-      thisForm.querySelector('.loading').classList.add('d-block');
-      thisForm.querySelector('.error-message').classList.remove('d-block');
-      thisForm.querySelector('.sent-message').classList.remove('d-block');
+          thisForm.querySelector('.loading').classList.add('d-block');
+          thisForm.querySelector('.error-message').classList.remove('d-block');
+          thisForm.querySelector('.sent-message').classList.remove('d-block');
 
+          fetch(action, {
+            method: 'POST',
+            body: data,
+          })
+            .then(response => response.json())
+            .then(data => {
+              thisForm.querySelector('.loading').classList.remove('d-block');
+              if (data.status === 'OK') {
+                thisForm.querySelector('.sent-message').classList.add('d-block');
+                thisForm.reset();
 
-      fetch(action, {
-      method: 'POST',
-      body: data,
-      dataType:'json'
-    })
-    .then(response => {
-      if( response.ok ) {
-        return response.text();
-      } else {
-        throw new Error(`${response.status} ${response.statusText} ${response.url}`); 
-      }
-    })
-    .then(data => {
-        setTimeout(() => { 
-      var obj = JSON.parse(data);
-      thisForm.querySelector('.loading').classList.remove('d-block');
-      if (obj.status == 'OK') {
-        thisForm.querySelector('.sent-message').classList.add('d-block');
-        thisForm.reset(); 
-      } else {
-        throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
-      }
-          }, 1000); 
-    })
-    .catch((error) => {
-      displayError(thisForm, error);
-    });
+                setTimeout(function () {
+                  thisForm.querySelector('.sent-message').classList.remove('d-block');
+                }, 2000);
+              } else {
+                throw new Error(data.message ? data.message : 'Form Submission Failed And No Error Message Returned From: ' + action);
+              }
+            })
+            .catch((error) => {
+              displayError(thisForm, error);
+            });
 
-    });
-  });
-
-  function displayError(thisForm, error) {
-    thisForm.querySelector('.loading').classList.remove('d-block');
-    thisForm.querySelector('.error-message').innerHTML = error;
-    thisForm.querySelector('.error-message').classList.add('d-block');
-  }
-
-
-})();
-</script>
+          function displayError(thisForm, error) {
+            thisForm.querySelector('.error-message').innerHTML = error;
+            thisForm.querySelector('.error-message').classList.add('d-block');
+          }
+        });
+      });
+    })();
+  </script> 
 </body>
 
 </html>
