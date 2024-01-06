@@ -447,6 +447,7 @@
       }
     })
     .then(data => {
+        setTimeout(() => { 
       var obj = JSON.parse(data);
       thisForm.querySelector('.loading').classList.remove('d-block');
       if (obj.status == 'OK') {
@@ -455,6 +456,7 @@
       } else {
         throw new Error(data ? data : 'Form submission failed and no error message returned from: ' + action); 
       }
+          }, 1000); 
     })
     .catch((error) => {
       displayError(thisForm, error);
